@@ -1,7 +1,10 @@
 package br.com.maschdy.moviez.model
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Movie(
     @Json(name = "adult") val isAdult: Boolean,
     @Json(name = "backdrop_path") val backdropPath: String,
@@ -17,4 +20,4 @@ data class Movie(
     @Json(name = "video") val video: Boolean,
     @Json(name = "vote_average") val voteAverage: Double,
     @Json(name = "vote_count") val voteCount: Int
-)
+) : Parcelable

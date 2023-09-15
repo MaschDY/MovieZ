@@ -1,13 +1,13 @@
 package br.com.maschdy.moviez.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import br.com.maschdy.moviez.databinding.FragmentHomeBinding
 import br.com.maschdy.moviez.model.Movie
 import kotlinx.coroutines.launch
@@ -38,6 +38,7 @@ class HomeFragment : Fragment() {
                 when (state) {
                     is HomeUiState.Error -> renderError(state.message)
                     is HomeUiState.Success -> renderSuccess(state.movies)
+                    null -> {}
                 }
             }
         }
@@ -48,6 +49,15 @@ class HomeFragment : Fragment() {
     }
 
     private fun renderSuccess(movies: List<Movie>) {
-        Log.d("Home Movies", movies.toString())
+        setPopularMoviesRecyclerView(movies)
+    }
+
+    private fun setPopularMoviesRecyclerView(movies: List<Movie>) = with(binding) {
+        popularMoviesRecyclerView.adapter = PopularMoviesAdapter(movies, ::navigateToMovieDetail)
+    }
+
+    private fun navigateToMovieDetail(movieId: Int) {
+        HomeFragmentDirections.actionHomeFragmentToMovieDetailFragment(movieId = movieId)
+            .apply(findNavController()::navigate)
     }
 }
