@@ -9,8 +9,10 @@ import br.com.maschdy.moviez.data.network.NetworkFactory.provideRetrofit
 import br.com.maschdy.moviez.data.network.service.MovieService
 import br.com.maschdy.moviez.data.repository.MovieRepositoryImpl
 import br.com.maschdy.moviez.domain.repository.MovieRepository
+import br.com.maschdy.moviez.domain.usecase.GetMovieByIdUseCase
 import br.com.maschdy.moviez.domain.usecase.GetMoviesUseCase
 import br.com.maschdy.moviez.presentation.home.HomeViewModel
+import br.com.maschdy.moviez.presentation.movie_detail.MovieDetailViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 import java.net.URL
@@ -25,6 +27,8 @@ val baseModules = module {
     single<MovieDataSource> { MovieDataSourceImpl(get()) }
     single<MovieRepository> { MovieRepositoryImpl(get()) }
     single { GetMoviesUseCase(get()) }
+    single { GetMovieByIdUseCase(get()) }
 
     viewModelOf(::HomeViewModel)
+    viewModelOf(::MovieDetailViewModel)
 }
