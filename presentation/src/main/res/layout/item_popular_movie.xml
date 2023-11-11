@@ -23,8 +23,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:layout_margin="4dp"
         app:layout_constraintEnd_toEndOf="@+id/poster_imageView"
         app:layout_constraintStart_toStartOf="@+id/poster_imageView"
-        app:layout_constraintTop_toBottomOf="@+id/poster_imageView"
+        app:layout_constraintBottom_toBottomOf="@+id/poster_imageView"
         tools:text="Movie Title" />
 </androidx.constraintlayout.widget.ConstraintLayout>

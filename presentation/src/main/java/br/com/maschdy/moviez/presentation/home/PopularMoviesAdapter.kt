@@ -1,16 +1,24 @@
 package br.com.maschdy.moviez.presentation.home
 
+import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.annotation.DrawableRes
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import br.com.maschdy.moviez.domain.model.Movie
 import br.com.maschdy.moviez.presentation.R
 import br.com.maschdy.moviez.presentation.databinding.ItemPopularMovieBinding
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.bitmap.CenterInside
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 
 class PopularMoviesAdapter(
     private val movies: List<Movie>,
@@ -45,20 +53,72 @@ class PopularMoviesAdapter(
             onMovieClick(movie.id)
         }
 
-        val urlPoster = "https://image.tmdb.org/t/p/original" + movie.posterPath
-        setPoster(urlPoster, posterImageView)
-
         titleTextView.text = movie.title
+
+        val urlPoster = "https://image.tmdb.org/t/p/original" + movie.posterPath
+        val posterPreview = R.drawable.ic_default_poster
+        setPoster(
+            url = urlPoster,
+            imageView = posterImageView,
+            defaultImagePreview = posterPreview,
+            onLoadImageSuccess = { posterImage -> onLoadImageSuccess(binding, posterImage) },
+            onLoadImageFailure = ::onLoadImageFailure
+        )
     }
 
-    private fun setPoster(url: String, imageView: ImageView) {
+    private fun onLoadImageSuccess(
+        binding: ItemPopularMovieBinding,
+        posterImage: Drawable
+    ) = with(binding) {
+        posterImageView.setImageDrawable(posterImage)
+        titleTextView.isVisible = false
+    }
+
+    private fun onLoadImageFailure(e: Exception?) {
+        Log.e("GlideImage", Log.getStackTraceString(e))
+    }
+
+    private fun setPoster(
+        url: String,
+        imageView: ImageView,
+        @DrawableRes defaultImagePreview: Int,
+        onLoadImageSuccess: (Drawable) -> Unit = {},
+        onLoadImageFailure: (Exception?) -> Unit = {}
+    ) {
         var requestOptions = RequestOptions()
         requestOptions = requestOptions.transform(CenterInside(), RoundedCorners(16))
-            .placeholder(R.drawable.ic_default_poster)
+            .placeholder(defaultImagePreview)
         Glide.with(imageView)
             .load(url)
             .override(200, 300)
             .apply(requestOptions)
+            .listener(configureImageRequestListener(onLoadImageSuccess, onLoadImageFailure))
             .into(imageView)
+    }
+
+    private fun configureImageRequestListener(
+        onLoadImageSuccess: (Drawable) -> Unit,
+        onLoadImageFailure: (Exception?) -> Unit
+    ) = object : RequestListener<Drawable> {
+        override fun onLoadFailed(
+            e: GlideException?,
+            model: Any?,
+            target: Target<Drawable>,
+            isFirstResource: Boolean
+        ): Boolean {
+            onLoadImageFailure(e)
+            return true
+        }
+
+        override fun onResourceReady(
+            resource: Drawable,
+            model: Any,
+            target: Target<Drawable>?,
+            dataSource: DataSource,
+            isFirstResource: Boolean
+        ): Boolean {
+            onLoadImageSuccess(resource)
+            return true
+        }
     }
 }
