@@ -17,6 +17,8 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private val viewModel: HomeViewModel by viewModel()
+    private var popularMoviesAdapter: PopularMoviesAdapter =
+        PopularMoviesAdapter(listOf(), ::navigateToMovieDetail)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,6 +32,11 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configureListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        popularMoviesAdapter.setCanClickItems(true)
     }
 
     private fun configureListeners() {
@@ -53,10 +60,12 @@ class HomeFragment : Fragment() {
     }
 
     private fun setPopularMoviesRecyclerView(movies: List<Movie>) = with(binding) {
-        popularMoviesRecyclerView.adapter = PopularMoviesAdapter(movies, ::navigateToMovieDetail)
+        popularMoviesAdapter = PopularMoviesAdapter(movies, ::navigateToMovieDetail)
+        popularMoviesRecyclerView.adapter = popularMoviesAdapter
     }
 
     private fun navigateToMovieDetail(movieId: Int) {
+        popularMoviesAdapter.setCanClickItems(false)
         HomeFragmentDirections.actionHomeFragmentToMovieDetailFragment(movieId = movieId)
             .apply(findNavController()::navigate)
     }

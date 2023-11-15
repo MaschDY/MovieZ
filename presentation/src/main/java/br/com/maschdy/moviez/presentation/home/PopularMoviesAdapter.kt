@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import br.com.maschdy.moviez.domain.model.Movie
 import br.com.maschdy.moviez.presentation.R
 import br.com.maschdy.moviez.presentation.databinding.ItemPopularMovieBinding
+import br.com.maschdy.moviez.presentation.util.setSafeOnClickListener
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -23,8 +24,13 @@ import com.bumptech.glide.request.target.Target
 class PopularMoviesAdapter(
     private val movies: List<Movie>,
     private val onMovieClick: (movieId: Int) -> Unit
-) :
-    RecyclerView.Adapter<PopularMoviesAdapter.PopularMoviesViewHolder>() {
+) : RecyclerView.Adapter<PopularMoviesAdapter.PopularMoviesViewHolder>() {
+
+    private var canClickItems: Boolean = true
+
+    fun setCanClickItems(canClickItems: Boolean) {
+        this.canClickItems = canClickItems
+    }
 
     inner class PopularMoviesViewHolder(val binding: ItemPopularMovieBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -49,7 +55,8 @@ class PopularMoviesAdapter(
         binding: ItemPopularMovieBinding,
         movie: Movie
     ) = with(binding) {
-        binding.root.setOnClickListener {
+        binding.root.setSafeOnClickListener {
+            if (!canClickItems) return@setSafeOnClickListener
             onMovieClick(movie.id)
         }
 
