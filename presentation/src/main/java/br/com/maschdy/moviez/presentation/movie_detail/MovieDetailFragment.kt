@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import br.com.maschdy.moviez.domain.model.Genre
 import br.com.maschdy.moviez.domain.model.Movie
 import br.com.maschdy.moviez.presentation.R
 import br.com.maschdy.moviez.presentation.databinding.FragmentMovieDetailBinding
@@ -57,6 +59,7 @@ class MovieDetailFragment : Fragment() {
     private fun renderSuccess(movie: Movie) {
         setPoster(movie.backdropPath)
         setMovieInfo(movie)
+        setMovieGenres(movie.genres ?: listOf())
     }
 
     private fun setPoster(backdropPosterPath: String) = with(binding) {
@@ -73,5 +76,13 @@ class MovieDetailFragment : Fragment() {
     private fun setMovieInfo(movie: Movie) = with(binding) {
         movieTitleTextView.text = movie.title
         movieDescriptionTextView.text = movie.overview
+    }
+
+    private fun setMovieGenres(genres: List<Genre>) = with(binding) {
+        if (genres.isEmpty()) {
+            genresRecyclerView.isVisible = false
+        } else {
+            genresRecyclerView.adapter = GenresMovieAdapter(genres)
+        }
     }
 }

@@ -1,7 +1,9 @@
 package br.com.maschdy.moviez.data.mapper
 
+import br.com.maschdy.moviez.data.entity.GenreEntity
 import br.com.maschdy.moviez.data.entity.MovieEntity
 import br.com.maschdy.moviez.data.entity.MoviesEntity
+import br.com.maschdy.moviez.domain.model.Genre
 import br.com.maschdy.moviez.domain.model.Movie
 import br.com.maschdy.moviez.domain.model.Movies
 
@@ -9,8 +11,8 @@ object Mapper {
 
     fun MovieEntity.toMovie(): Movie = Movie(
         isAdult = this.isAdult,
-        backdropPath = this.backdropPath,
-        genreIds = this.genreIds,
+        backdropPath = this.backdropPath ?: "",
+        genres = this.genres?.map { it.toGenre() },
         id = this.id,
         originalLanguage = this.originalLanguage,
         originalTitle = this.originalTitle,
@@ -29,5 +31,10 @@ object Mapper {
         this.results.map { it.toMovie() },
         this.totalPages,
         this.totalResults
+    )
+
+    private fun GenreEntity.toGenre(): Genre = Genre(
+        id = this.id,
+        name = this.name
     )
 }
